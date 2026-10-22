@@ -1,4 +1,5 @@
 import cors from "cors";
+import type { NextFunction, Request, Response } from "express";
 import express from "express";
 import multer from "multer";
 import { keccak256 } from "viem";
@@ -16,7 +17,13 @@ const upload = multer({
   limits: { fileSize: config.maxUploadBytes, files: 1 },
 });
 
-const serialize = (value) =>
+/** viem errors carry a friendlier shortMessage. */
+const errorMessage = (err: unknown): string => {
+  const e = err as { shortMessage?: string; message?: string };
+  return e.shortMessage ?? e.message ?? "Unknown error";
+};
+
+const serialize = (value: unknown) =>
   JSON.parse(JSON.stringify(value, (_k, v) => (typeof v === "bigint" ? v.toString() : v)));
 
 app.get("/api/health", async (_req, res) => {
@@ -46,7 +53,7 @@ app.post("/api/receipts", upload.single("file"), async (req, res) => {
 
     res.json({ receiptHash, ...extraction });
   } catch (err) {
-    res.status(422).json({ error: err.message });
+    res.status(422).json({ error: errorMessage(err) });
   }
 });
 
@@ -80,11 +87,11 @@ app.post("/api/hops/:hopId/check", async (req, res) => {
       }),
     );
   } catch (err) {
-    res.status(500).json({ error: err.shortMessage ?? err.message });
+    res.status(500).json({ error: errorMessage(err) });
   }
 });
 
-app.use((err, _req, res, _next) => {
+app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   if (err instanceof multer.MulterError) return res.status(400).json({ error: err.message });
   res.status(500).json({ error: "Internal error" });
 });

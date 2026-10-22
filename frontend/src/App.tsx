@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { formatEther, parseEther, parseEventLogs } from "viem";
-import { CreateCampaign, Donate, RecordHop } from "./Forms.jsx";
-import HopDetail from "./HopDetail.jsx";
-import TrailMap from "./TrailMap.jsx";
+import { CreateCampaign, Donate, RecordHop } from "./Forms";
+import type { HopInput } from "./Forms";
+import HopDetail from "./HopDetail";
+import TrailMap from "./TrailMap";
 import {
   abi,
   apiUrl,
@@ -15,28 +16,35 @@ import {
   loadHops,
   loadVerifier,
   publicClient,
-} from "./chain.js";
-import { STATUS_INFO, addressUrl, cents, eth, isHeld, isReleased, sameAddress, short } from "./utils.js";
+} from "./chain";
+import type { Campaign, Hop, Wallet } from "./chain";
+import { STATUS_INFO, addressUrl, cents, eth, isHeld, isReleased, sameAddress, short } from "./utils";
 
-const STEPS = [
+const STEPS: [string, string, string][] = [
   ["1", "Donors give", "Donations go into a campaign and are visible to everyone."],
   ["2", "NGO pays with a receipt", "Each payment is held in escrow with a receipt attached."],
   ["3", "The contract checks", "A matching receipt releases the money. A mismatch is held for review."],
 ];
 
+/** viem errors carry a friendlier shortMessage. */
+const errorText = (e: unknown): string => {
+  const err = e as { shortMessage?: string; message?: string };
+  return err.shortMessage ?? err.message ?? "Unknown error";
+};
+
 export default function App() {
-  const [wallet, setWallet] = useState(null);
-  const [campaigns, setCampaigns] = useState([]);
-  const [selected, setSelected] = useState(null);
-  const [hops, setHops] = useState([]);
+  const [wallet, setWallet] = useState<Wallet | null>(null);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [selected, setSelected] = useState<bigint | null>(null);
+  const [hops, setHops] = useState<Hop[]>([]);
   // ?hop=3 deep-links to a hop's details
-  const [selectedHopId, setSelectedHopId] = useState(() => {
+  const [selectedHopId, setSelectedHopId] = useState<bigint | null>(() => {
     const param = new URLSearchParams(window.location.search).get("hop");
-    return /^\d+$/.test(param ?? "") ? BigInt(param) : null;
+    return param && /^\d+$/.test(param) ? BigInt(param) : null;
   });
-  const [verifier, setVerifier] = useState(null);
-  const [aiMode, setAiMode] = useState(null);
-  const [message, setMessage] = useState(null);
+  const [verifier, setVerifier] = useState<string | null>(null);
+  const [aiMode, setAiMode] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ kind: "info" | "ok" | "error"; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +67,7 @@ export default function App() {
     if (!contractAddress) return;
     const load = () =>
       refresh()
-        .catch((e) => setMessage({ kind: "error", text: e.shortMessage ?? e.message }))
+        .catch((e) => setMessage({ kind: "error", text: errorText(e) }))
         .finally(() => setLoading(false));
     load();
     const timer = setInterval(() => refresh().catch(() => {}), 8000);
@@ -71,12 +79,12 @@ export default function App() {
     loadVerifier().then(setVerifier).catch(() => {});
     fetch(`${apiUrl}/api/health`)
       .then((r) => r.json())
-      .then((h) => setAiMode(h.ai))
+      .then((h: { ai: string }) => setAiMode(h.ai))
       .catch(() => setAiMode("offline"));
   }, []);
 
   // Wrap an action: show progress, catch errors, refresh afterwards.
-  const run = async (fn) => {
+  const run = async (fn: (progress: (text: string) => void) => Promise<string>) => {
     setBusy(true);
     setMessage(null);
     try {
@@ -84,7 +92,7 @@ export default function App() {
       setMessage({ kind: "ok", text });
       await refresh();
     } catch (e) {
-      setMessage({ kind: "error", text: e.shortMessage ?? e.message });
+      setMessage({ kind: "error", text: errorText(e) });
     } finally {
       setBusy(false);
     }
@@ -95,9 +103,9 @@ export default function App() {
     return wallet;
   };
 
-  const write = async (functionName, args, value) => {
+  const write = async (functionName: string, args: unknown[], value?: bigint) => {
     const { walletClient, account } = requireWallet();
-    const hash = await walletClient.writeContract({ account, address: contractAddress, abi, functionName, args, value });
+    const hash = await walletClient.writeContract({ account, chain, address: contractAddress, abi, functionName, args, value });
     return publicClient.waitForTransactionReceipt({ hash });
   };
 
@@ -107,38 +115,38 @@ export default function App() {
       return "Wallet connected";
     });
 
-  const createCampaign = (name) =>
+  const createCampaign = (name: string) =>
     run(async (progress) => {
       progress("Confirm in your wallet…");
       await write("createCampaign", [name]);
       const list = await loadCampaigns();
-      setSelected(list.at(-1).id); // jump to the newest campaign
+      setSelected(list.at(-1)?.id ?? null); // jump to the newest campaign
       setSelectedHopId(null);
       return `Campaign "${name}" created`;
     });
 
-  const donate = (amountEth) =>
+  const donate = (amountEth: string) =>
     run(async (progress) => {
       progress("Confirm in your wallet…");
       await write("donate", [selected], parseEther(amountEth));
       return `Donated ${amountEth} ETH`;
     });
 
-  const reviewHop = (hopId, approve) =>
+  const reviewHop = (hopId: bigint, approve: boolean) =>
     run(async (progress) => {
       progress("Confirm in your wallet…");
       await write("reviewHop", [hopId, approve]);
       return approve ? "Approved: funds released to the recipient" : "Rejected: funds returned to the campaign";
     });
 
-  const reclaim = (hopId) =>
+  const reclaim = (hopId: bigint) =>
     run(async (progress) => {
       progress("Confirm in your wallet…");
       await write("reclaim", [hopId]);
       return "Funds reclaimed to the campaign";
     });
 
-  const sendHop = ({ to, amountEth, declared, label, file, mockCents }) =>
+  const sendHop = ({ to, amountEth, declared, label, file, mockCents }: HopInput) =>
     run(async (progress) => {
       progress("1/4 Reading the receipt…");
       const form = new FormData();
@@ -157,7 +165,7 @@ export default function App() {
         receipt.receiptHash,
         label,
       ]);
-      const [log] = parseEventLogs({ abi, logs: tx.logs, eventName: "HopRecorded" });
+      const [log] = parseEventLogs({ abi, logs: tx.logs, eventName: "HopRecorded" }) as unknown as { args: { hopId: bigint } }[];
 
       progress("4/4 Checking the receipt on-chain…");
       const check = await fetch(`${apiUrl}/api/hops/${log.args.hopId}/check`, { method: "POST" });
@@ -173,7 +181,7 @@ export default function App() {
     return (
       <main className="page">
         <h1>Follow Your Dollar</h1>
-        <p className="banner error">Set VITE_CONTRACT_ADDRESS in frontend/.env (see .env.example).</p>
+        <p className="banner error">Set NEXT_PUBLIC_CONTRACT_ADDRESS in frontend/.env.local (see .env.example).</p>
       </main>
     );
   }
@@ -344,7 +352,7 @@ export default function App() {
   );
 }
 
-function Stat({ label, value, warn }) {
+function Stat({ label, value, warn }: { label: string; value: string; warn?: boolean }) {
   return (
     <div className={`stat ${warn ? "warn" : ""}`}>
       <span className="stat-value">{value}</span>

@@ -1,6 +1,7 @@
 "use client";
 
 import { formatEther } from "viem";
+import type { Hop } from "./chain";
 import {
   RECLAIM_AFTER_SECONDS,
   STATUS_INFO,
@@ -9,9 +10,18 @@ import {
   isHeld,
   short,
   timeAgo,
-} from "./utils.js";
+} from "./utils";
 
-export default function HopDetail({ hop, isReviewer, isNgo, busy, onReview, onReclaim }) {
+interface Props {
+  hop: Hop;
+  isReviewer: boolean;
+  isNgo: boolean;
+  busy: boolean;
+  onReview: (hopId: bigint, approve: boolean) => void;
+  onReclaim: (hopId: bigint) => void;
+}
+
+export default function HopDetail({ hop, isReviewer, isNgo, busy, onReview, onReclaim }: Props) {
   const info = STATUS_INFO[hop.status];
   const checked = hop.status !== "Pending";
   const declared = Number(hop.declaredCents);

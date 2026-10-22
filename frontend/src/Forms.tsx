@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import type { Address } from "viem";
 import { isAddress } from "viem";
 
-export function CreateCampaign({ onSubmit, disabled }) {
+export function CreateCampaign({ onSubmit, disabled }: { onSubmit: (name: string) => void; disabled: boolean }) {
   const [name, setName] = useState("");
   return (
     <form
@@ -21,7 +22,7 @@ export function CreateCampaign({ onSubmit, disabled }) {
   );
 }
 
-export function Donate({ onSubmit, disabled }) {
+export function Donate({ onSubmit, disabled }: { onSubmit: (amountEth: string) => void; disabled: boolean }) {
   const [amount, setAmount] = useState("0.01");
   return (
     <form
@@ -38,24 +39,42 @@ export function Donate({ onSubmit, disabled }) {
   );
 }
 
-export function RecordHop({ onSubmit, disabled, mock }) {
+export interface HopInput {
+  to: Address;
+  amountEth: string;
+  declared: number;
+  label: string;
+  file: File;
+  mockCents: string;
+}
+
+export function RecordHop({
+  onSubmit,
+  disabled,
+  mock,
+}: {
+  onSubmit: (input: HopInput) => void;
+  disabled: boolean;
+  mock: boolean;
+}) {
   const [to, setTo] = useState("");
   const [amountEth, setAmountEth] = useState("0.005");
   const [declared, setDeclared] = useState("50");
   const [label, setLabel] = useState("");
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<File | null>(null);
   const [mockCents, setMockCents] = useState("");
 
-  const problems = [];
+  const problems: string[] = [];
   if (to && !isAddress(to)) problems.push("Recipient is not a valid address");
   const valid =
-    isAddress(to) && Number(amountEth) > 0 && Number(declared) >= 0 && file && (!mock || mockCents !== "");
+    isAddress(to) && Number(amountEth) > 0 && Number(declared) >= 0 && file !== null && (!mock || mockCents !== "");
 
   return (
     <form
       className="card wide"
       onSubmit={(e) => {
         e.preventDefault();
+        if (!isAddress(to) || !file) return;
         onSubmit({ to, amountEth, declared: Number(declared), label, file, mockCents });
       }}
     >
@@ -70,7 +89,7 @@ export function RecordHop({ onSubmit, disabled, mock }) {
       </div>
       <label>
         Receipt (image or PDF, up to 5 MB)
-        <input type="file" accept="image/*,application/pdf" onChange={(e) => setFile(e.target.files[0] ?? null)} />
+        <input type="file" accept="image/*,application/pdf" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
       </label>
       {mock && (
         <label>

@@ -4,23 +4,24 @@
 //      CHAIN (local|baseSepolia), RPC_URL (optional)
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import type { Abi, Address, Hex } from "viem";
 import { createPublicClient, createWalletClient, http, parseEther, parseEventLogs } from "viem";
 import { generatePrivateKey, privateKeyToAccount, privateKeyToAddress } from "viem/accounts";
 import { baseSepolia, foundry } from "viem/chains";
 
-const need = (n) => {
+const need = (n: string): string => {
   if (!process.env[n]) throw new Error(`Missing env var ${n}`);
   return process.env[n];
 };
 
-const abi = JSON.parse(
+const abi: Abi = JSON.parse(
   readFileSync(fileURLToPath(new URL("../../shared/DonationTrail.abi.json", import.meta.url)), "utf8"),
 );
-const address = need("CONTRACT_ADDRESS");
+const address = need("CONTRACT_ADDRESS") as Address;
 const api = process.env.API_URL ?? "http://localhost:8787";
 const chain = process.env.CHAIN === "baseSepolia" ? baseSepolia : foundry;
 const transport = http(process.env.RPC_URL || undefined);
-const account = privateKeyToAccount(need("NGO_KEY"));
+const account = privateKeyToAccount(need("NGO_KEY") as Hex);
 const publicClient = createPublicClient({ chain, transport });
 const wallet = createWalletClient({ account, chain, transport });
 
@@ -30,10 +31,14 @@ const PNG = Buffer.from(
   "base64",
 );
 
-const send = async (functionName, args, value) => {
-  const hash = await wallet.writeContract({ address, abi, functionName, args, value });
+const send = async (functionName: string, args: unknown[], value?: bigint) => {
+  const hash = await wallet.writeContract({ address, abi, functionName, args, value, chain, account });
   return publicClient.waitForTransactionReceipt({ hash });
 };
+
+// The ABI is loaded from JSON at runtime, so viem cannot infer event arg types.
+const eventArgs = <T>(logs: Parameters<typeof parseEventLogs>[0]["logs"], eventName: string): T =>
+  (parseEventLogs({ abi, logs, eventName })[0] as unknown as { args: T }).args;
 
 const hops = [
   { label: "Field office", eth: "0.004", declared: 12000, receipt: 12000 },
@@ -42,7 +47,7 @@ const hops = [
 ];
 
 const created = await send("createCampaign", ["Flood relief demo"]);
-const campaignId = parseEventLogs({ abi, logs: created.logs, eventName: "CampaignCreated" })[0].args.campaignId;
+const campaignId = eventArgs<{ campaignId: bigint }>(created.logs, "CampaignCreated").campaignId;
 await send("donate", [campaignId], parseEther("0.02"));
 console.log(`Campaign ${campaignId} created and funded`);
 
@@ -56,7 +61,7 @@ for (const [i, hop] of hops.entries()) {
 
   const to = privateKeyToAddress(generatePrivateKey()); // throwaway recipient, key discarded
   const tx = await send("recordHop", [campaignId, to, parseEther(hop.eth), BigInt(hop.declared), receipt.receiptHash, hop.label]);
-  const { hopId } = parseEventLogs({ abi, logs: tx.logs, eventName: "HopRecorded" })[0].args;
+  const { hopId } = eventArgs<{ hopId: bigint }>(tx.logs, "HopRecorded");
 
   const check = await fetch(`${api}/api/hops/${hopId}/check`, { method: "POST" });
   const result = await check.json();

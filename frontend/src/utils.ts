@@ -1,14 +1,15 @@
 import { formatEther } from "viem";
-import { chain } from "./chain.js";
+import type { HopStatus } from "./chain";
+import { chain } from "./chain";
 
-export const short = (a) => `${a.slice(0, 6)}…${a.slice(-4)}`;
-export const cents = (v) => (Number(v) / 100).toFixed(2);
-export const eth = (v) => `${Number(formatEther(v)).toFixed(4)} ETH`;
-export const sameAddress = (a, b) => !!a && !!b && a.toLowerCase() === b.toLowerCase();
+export const short = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;
+export const cents = (v: bigint | number) => (Number(v) / 100).toFixed(2);
+export const eth = (v: bigint) => `${Number(formatEther(v)).toFixed(4)} ETH`;
+export const sameAddress = (a?: string | null, b?: string | null) => !!a && !!b && a.toLowerCase() === b.toLowerCase();
 
 export const RECLAIM_AFTER_SECONDS = 7 * 24 * 60 * 60;
 
-export function timeAgo(timestampSeconds) {
+export function timeAgo(timestampSeconds: bigint | number) {
   const seconds = Math.max(0, Math.floor(Date.now() / 1000) - Number(timestampSeconds));
   if (seconds < 60) return "just now";
   if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
@@ -17,10 +18,10 @@ export function timeAgo(timestampSeconds) {
 }
 
 export const explorerBase = chain.blockExplorers?.default.url;
-export const addressUrl = (a) => (explorerBase ? `${explorerBase}/address/${a}` : null);
+export const addressUrl = (a: string) => (explorerBase ? `${explorerBase}/address/${a}` : null);
 
 /** Icon, short label and plain-language explanation for each hop status. */
-export const STATUS_INFO = {
+export const STATUS_INFO: Record<HopStatus, { icon: string; label: string; text: string }> = {
   Pending: {
     icon: "⏳",
     label: "In escrow",
@@ -48,5 +49,5 @@ export const STATUS_INFO = {
   },
 };
 
-export const isReleased = (status) => status === "Verified" || status === "Approved";
-export const isHeld = (status) => status === "Pending" || status === "Flagged";
+export const isReleased = (status: string) => status === "Verified" || status === "Approved";
+export const isHeld = (status: string) => status === "Pending" || status === "Flagged";

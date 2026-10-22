@@ -27,12 +27,12 @@ echo "    $CONTRACT"
 
 echo "==> Starting backend (mock AI)"
 (cd "$ROOT/backend" && CHAIN=local RPC_URL="$RPC" CONTRACT_ADDRESS="$CONTRACT" \
-  VERIFIER_PRIVATE_KEY="$VER_KEY" ANTHROPIC_API_KEY= node src/server.js) &
+  VERIFIER_PRIVATE_KEY="$VER_KEY" ANTHROPIC_API_KEY= npx tsx src/server.ts) &
 PIDS+=($!)
 until curl -fs localhost:8787/api/health >/dev/null 2>&1; do sleep 0.5; done
 
 echo "==> Seeding demo data"
-(cd "$ROOT/backend" && CHAIN=local RPC_URL="$RPC" CONTRACT_ADDRESS="$CONTRACT" NGO_KEY="$NGO_KEY" node scripts/seed.js)
+(cd "$ROOT/backend" && CHAIN=local RPC_URL="$RPC" CONTRACT_ADDRESS="$CONTRACT" NGO_KEY="$NGO_KEY" npx tsx scripts/seed.ts)
 
 echo "==> Starting frontend on http://localhost:5173"
 echo "    Wallet: add network RPC $RPC, chain id 31337, and import this NGO test key:"

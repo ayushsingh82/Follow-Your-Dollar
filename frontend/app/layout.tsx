@@ -1,16 +1,18 @@
+import type { Metadata, Viewport } from "next";
+import type { ReactNode } from "react";
 import "./globals.css";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Follow Your Dollar",
   description: "Every donated dollar, traced to a receipt.",
 };
 
-export const viewport = {
+export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body>{children}</body>

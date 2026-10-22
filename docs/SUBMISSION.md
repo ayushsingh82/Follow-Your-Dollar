@@ -37,7 +37,7 @@ Tech Track
 See `docs/ARCHITECTURE.md` (diagram, flow, contract functions, trust model).
 
 ## Stack
-Solidity + Foundry, Base Sepolia, Node/Express, viem, Next.js (React), Claude (vision) for receipt extraction.
+Solidity + Foundry, Base Sepolia, TypeScript, Node/Express, viem, Next.js (React), Claude (vision) for receipt extraction.
 
 ## Links (TODO)
 - GitHub repository: TODO

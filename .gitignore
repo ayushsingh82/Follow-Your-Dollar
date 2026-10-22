@@ -10,3 +10,5 @@ contracts/broadcast/
 .next/
 contracts/lib/
 frontend/AGENTS.md
+next-env.d.ts
+*.tsbuildinfo
