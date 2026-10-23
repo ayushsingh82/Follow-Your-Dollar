@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Follow Your Dollar — Pitch Deck</title>
+<style>
+  :root {
+    --paper: #f1ece0;
+    --sheet: #fbf9f3;
+    --ink: #16130f;
+    --mute: #6a6256;
+    --red: #c8321d;
+    --green: #1d6b3b;
+    --serif: Georgia, "Times New Roman", serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Courier New", monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #2a2620; color: var(--ink); overflow: hidden; font-family: var(--serif); }
+
+  #stage { position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px; transform-origin: center center; }
+  .slide { position: absolute; inset: 0; background: var(--paper); padding: 40px 72px 54px; display: none; flex-direction: column; overflow: hidden; }
+  .slide.active { display: flex; }
+
+  .run { display: flex; justify-content: space-between; align-items: center; font: 600 13px var(--mono);
+    letter-spacing: .16em; text-transform: uppercase; border-bottom: 2px solid var(--ink); padding-bottom: 10px; margin-bottom: 34px; }
+  .run .mk { display: flex; align-items: center; gap: 10px; }
+  .run .mk svg { width: 22px; height: 22px; }
+
+  h1 { font-size: 118px; line-height: .92; letter-spacing: -.035em; font-weight: 700; }
+  h2 { font-size: 52px; line-height: 1.06; letter-spacing: -.02em; font-weight: 700; max-width: 1040px; margin-bottom: 30px; }
+  h3 { font-size: 26px; font-weight: 700; margin-bottom: 8px; letter-spacing: -.01em; }
+  p, li { font-size: 22px; line-height: 1.42; }
+  .m { font-family: var(--mono); }
+  .lab { font: 600 13px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--mute); margin-bottom: 10px; display: block; }
+  .red { color: var(--red); } .green { color: var(--green); } .mute { color: var(--mute); }
+
+  .cols { display: grid; flex: 1; align-content: start; }
+  .cols > div { padding: 0 28px; border-left: 2px solid var(--ink); }
+  .cols > div:first-child { border-left: 0; padding-left: 0; }
+  .cols > div:last-child { padding-right: 0; }
+  .c2 { grid-template-columns: repeat(2, 1fr); } .c3 { grid-template-columns: repeat(3, 1fr); } .c4 { grid-template-columns: repeat(4, 1fr); }
+
+  .big { font-size: 104px; font-weight: 700; line-height: .9; letter-spacing: -.04em; }
+  .num { font: 700 15px var(--mono); letter-spacing: .1em; display: block; margin-bottom: 14px; }
+  .say { font-size: 32px; line-height: 1.25; border-top: 2px solid var(--ink); padding-top: 18px; margin-top: auto; max-width: 980px; font-style: italic; }
+
+  .stamp { display: inline-block; font: 700 22px var(--mono); letter-spacing: .14em; text-transform: uppercase;
+    border: 3px solid currentColor; padding: 6px 16px; transform: rotate(-4deg); }
+
+  /* receipt (title slide) */
+  .title { display: grid; grid-template-columns: 1fr 380px; gap: 60px; flex: 1; align-items: center; }
+  .tag { font-size: 30px; margin-top: 26px; max-width: 640px; line-height: 1.3; }
+  .receipt { background: var(--sheet); padding: 30px 30px 44px; font: 15px/1.9 var(--mono); transform: rotate(2deg);
+    box-shadow: 6px 6px 0 var(--ink);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), 95% 100%, 90% calc(100% - 14px), 85% 100%, 80% calc(100% - 14px), 75% 100%, 70% calc(100% - 14px), 65% 100%, 60% calc(100% - 14px), 55% 100%, 50% calc(100% - 14px), 45% 100%, 40% calc(100% - 14px), 35% 100%, 30% calc(100% - 14px), 25% 100%, 20% calc(100% - 14px), 15% 100%, 10% calc(100% - 14px), 5% 100%, 0 calc(100% - 14px)); }
+  .receipt .hd { text-align: center; font-weight: 700; letter-spacing: .12em; border-bottom: 2px dashed var(--ink); padding-bottom: 10px; margin-bottom: 10px; }
+  .receipt .ln { display: flex; justify-content: space-between; }
+  .receipt .ln span:first-child { flex: 1; overflow: hidden; white-space: nowrap; }
+  .receipt .ln span:first-child::after { content: " ........................................"; color: var(--mute); }
+  .receipt .st { text-align: right; font-weight: 700; margin-bottom: 6px; }
+  .receipt .ft { border-top: 2px dashed var(--ink); margin-top: 10px; padding-top: 10px; text-align: center; letter-spacing: .1em; }
+
+  /* steps */
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; position: relative; margin-top: 4px; }
+  .steps::before { content: ""; position: absolute; left: 0; right: 0; top: 33px; border-top: 3px dotted var(--ink); }
+  .steps > div { position: relative; padding-right: 22px; }
+  .steps .n { font-size: 66px; font-weight: 700; line-height: 1; background: var(--paper); display: inline-block; padding-right: 14px; margin-bottom: 14px; position: relative; }
+  .steps p { font-size: 19px; }
+  .outcome { display: grid; grid-template-columns: 1fr 1fr; margin-top: 34px; border-top: 2px solid var(--ink); }
+  .outcome > div { padding: 22px 0 0; }
+  .outcome > div + div { border-left: 2px solid var(--ink); padding-left: 32px; }
+  .outcome p { margin-top: 14px; font-size: 20px; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th { font: 600 13px var(--mono); letter-spacing: .14em; text-transform: uppercase; text-align: left; padding: 0 16px 10px 0; border-bottom: 2px solid var(--ink); color: var(--mute); }
+  td { padding: 15px 16px 15px 0; border-bottom: 1px solid var(--ink); font-size: 20px; line-height: 1.35; vertical-align: top; }
+  td:first-child { font-weight: 700; width: 27%; }
+
+  .chk li { list-style: none; font: 20px/1.4 var(--mono); padding: 9px 0 9px 36px; border-bottom: 1px dotted var(--ink); position: relative; }
+  .chk li::before { content: ""; position: absolute; left: 0; top: 13px; width: 18px; height: 18px; border: 2px solid var(--ink); }
+  .chk.done li::before { background: var(--ink); }
+  .chk.done li::after { content: ""; position: absolute; left: 6px; top: 16px; width: 5px; height: 10px; border: solid var(--paper); border-width: 0 2px 2px 0; transform: rotate(40deg); }
+
+  .foot { position: absolute; left: 72px; right: 72px; bottom: 22px; display: flex; justify-content: space-between; font: 12px var(--mono); letter-spacing: .12em; color: var(--mute); text-transform: uppercase; }
+  #bar { position: fixed; left: 0; top: 0; height: 4px; background: var(--red); width: 0; z-index: 5; }
+  #ctl { position: fixed; bottom: 10px; right: 14px; display: flex; gap: 8px; align-items: center; color: #b9ae9a; font: 13px var(--mono); z-index: 5; opacity: 0; transition: opacity .2s; }
+  #ctl:hover { opacity: 1; }
+  #ctl button { background: none; color: #f1ece0; border: 2px solid #b9ae9a; width: 34px; height: 30px; cursor: pointer; font: 16px var(--mono); }
+
+  @media print {
+    @page { size: 1280px 720px; margin: 0; }
+    html, body { overflow: visible; height: auto; background: none; }
+    #stage { position: static; transform: none !important; width: 1280px; height: auto; }
+    .slide { display: flex !important; position: relative; width: 1280px; height: 720px; page-break-after: always; }
+    #bar, #ctl { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="stage">
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <symbol id="mark" viewBox="0 0 40 40">
+    <rect width="40" height="40" fill="#16130f"/>
+    <path d="M7 31 Q 14 31 14 22 T 22 16 T 33 9" fill="none" stroke="#f1ece0" stroke-width="2.5" stroke-dasharray="1 5" stroke-linecap="round"/>
+    <circle cx="8" cy="31" r="3.4" fill="#f1ece0"/><circle cx="21" cy="19" r="3.4" fill="#f1ece0"/><circle cx="33" cy="9" r="3.4" fill="none" stroke="#f1ece0" stroke-width="2"/>
+  </symbol>
+</defs></svg>
+
+<!-- 1 TITLE -->
+<section class="slide">
+  <div class="run"><span class="mk"><svg><use href="#mark"/></svg>Follow Your Dollar</span><span>Web3 for Social Good 2026 / Tech Track</span></div>
+  <div class="title">
+    <div>
+      <h1>Follow<br>Your<br>Dollar.</h1>
+      <p class="tag">Every donated dollar, traced to a receipt. AI reads it. A contract decides.</p>
+    </div>
+    <div class="receipt">
+      <div class="hd">FOLLOW YOUR DOLLAR<br>CAMPAIGN #1 / FLOOD RELIEF</div>
+      <div class="ln"><span>Donors to NGO</span><span>$100</span></div>
+      <div class="ln"><span>NGO to field office</span><span>$60</span></div>
+      <div class="st green">VERIFIED, RELEASED</div>
+      <div class="ln"><span>Field office to vendor</span><span>$40</span></div>
+      <div class="st red">FLAGGED, HELD</div>
+      <div class="ft">NOBODY EDITS THIS LATER</div>
+    </div>
+  </div>
+  <div class="foot"><span>Pitch deck</span><span>01 / 11</span></div>
+</section>
+
+<!-- 2 PROBLEM -->
+<section class="slide">
+  <div class="run"><span class="mk"><svg><use href="#mark"/></svg>Follow Your Dollar</span><span>The problem</span></div>
+  <h2>Donors give. Then comes the silence.</h2>
+  <div class="cols c3">
+    <div><span class="num red">01</span><h3>Reports arrive late</h3><p>Months later, summarized into a few tidy numbers.</p></div>
+    <div><span class="num red">02</span><h3>The spender keeps the books</h3><p>The organization that spends the money also writes, and can edit, the story of it.</p></div>
+    <div><span class="num red">03</span><h3>Leaks stay invisible</h3><p>Auditors chase paper receipts after the fact. Small misuse slips through.</p></div>
+  </div>
+  <p class="say">When trust breaks, people stop giving. The honest NGOs pay for it too.</p>
+  <div class="foot"><span>Follow Your Dollar</span><span>02 / 11</span></div>
+</section>
+
+<!-- 3 SOLUTION -->
+<section class="slide">
+  <div class="run"><span class="mk"><svg><use href="#mark"/></svg>Follow Your Dollar</span><span>The solution</span></div>
+  <h2>A public trail for every hop of a donation, with a receipt behind each one.</h2>
+  <div class="cols c2">
+    <div><span class="lab">Donors</span><h3>Watch where it goes</h3><p>Give to a campaign and see each payment as a hop on a live map. Check any hop yourself, no trust required.</p></div>
+    <div><span class="lab">NGOs</span><h3>Prove it, don't claim it</h3><p>Attach a receipt to every payment. A matching receipt releases the funds on its own.</p></div>
+  </div>
+  <p class="say">The money stays in escrow until the receipt matches what was declared.</p>
+  <div class="foot"><span>Follow Your Dollar</span><span>03 / 11</span></div>
+</section>
+
+<!-- 4 HOW IT WORKS -->
+<section class="slide">
+  <div class="run"><span class="mk"><svg><use href="#mark"/></svg>Follow Your Dollar</span><span>How it works</span></div>
+  <h2>Escrow, read, decide, release.</h2>
+  <div class="steps">
+    <div><span class="n">1</span><h3>Donate</h3><p>Donors fund an NGO campaign.</p></div>
+    <div><span class="n">2</span><h3>Pay onward</h3><p>The NGO pays a vendor and uploads the receipt. Funds go into escrow.</p></div>
+    <div><span class="n">3</span><h3>AI reads</h3><p>Claude vision proposes the receipt total.</p></div>
+    <div><span class="n">4</span><h3>Contract decides</h3><p>Is it within 1% of the declared spend? That rule is on-chain.</p></div>
+  </div>
+  <div class="outcome">
+    <div><span class="stamp green">Match</span><p>The contract pays the recipient. The hop turns green on the map.</p></div>
+    <div><span class="stamp red">Mismatch</span><p>Funds stay held. A reviewer approves, or sends the money back to the campaign.</p></div>
+  </div>
+  <div class="foot"><span>Follow Your Dollar</span><span>04 / 11</span></div>
+</section>
+
+<!-- 5 WHY WEB3 + AI -->
+<section class="slide">
+  <div class="run"><span class="mk"><svg><use href="#mark"/></svg>Follow Your Dollar</span><span>Why Web3, why AI</span></div>
+  <h2>AI proposes. Code and the chain prove.</h2>
+  <div class="cols c3">
+    <div><span class="lab">The model</span><h3 style="font-size:40px">Reads.</h3><p>Pulls the total off a messy receipt as schema-checked JSON. It never decides validity.</p></div>
+    <div><span class="lab">The contract</span><h3 style="font-size:40px">Decides.</h3><p>The match rule is plain Solidity that anyone can read. No model, no back room.</p></div>
+    <div><span class="lab">The chain</span><h3 style="font-size:40px">Remembers.</h3><p>Hops, receipt hashes and results are public. Even the NGO cannot edit them later.</p></div>
+  </div>
+  <p class="say">Without Web3 you trust the NGO's database. With it, you check the trail yourself.</p>
+  <div class="foot"><span>Follow Your Dollar</span><span>05 / 11</span></div>
+</section>
+
+<!-- 6 PRODUCT -->
+<section class="slide">
+  <div class="run"><span class="mk"><svg><use href="#mark"/></svg>Follow Your Dollar</span><span>The product</span></div>
+  <h2>A working prototype, not a mock-up.</h2>
+  <div class="cols c4" style="flex:none">
+    <div><div class="big">25</div><span class="lab" style="margin-top:12px">contract tests</span></div>
+    <div><div class="big">6</div><span class="lab" style="margin-top:12px">backend tests</span></div>
+    <div><div class="big">5</div><span class="lab" style="margin-top:12px">hop states</span></div>
+    <div><div class="big">1</div><span class="lab" style="margin-top:12px">command to run the demo</span></div>
+  </div>
+  <div class="cols c3" style="margin-top:38px;flex:none">
+    <div><h3>Contract</h3><p style="font-size:19px">Campaigns, donations, escrowed hops, the on-chain match rule, review, and a 7-day reclaim.</p></div>
+    <div><h3>Backend</h3><p style="font-size:19px">Receipt upload, hashing, AI extraction, and the verifier wallet that submits checks.</p></div>
+    <div><h3>Dashboard</h3><p style="font-size:19px">A live trail map. Solid lines for released money, dotted for held, red for flagged.</p></div>
+  </div>
+  <div class="foot"><span>Follow Your Dollar</span><span>06 / 11</span></div>
+</section>
+
+<!-- 7 AUDIENCE -->
+<section class="slide">
+  <div class="run"><span class="mk"><svg><use href="#mark"/></svg>Follow Your Dollar</span><span>Target audience</span></div>
+  <h2>Three groups who need the same proof.</h2>
+  <table>
+    <tr><th>Who</th><th>What they need</th></tr>
+    <tr><td>NGOs and relief funds</td><td>Mid-size organizations that want repeat donors, and a way to show where money went instead of asking to be believed.</td></tr>
+    <tr><td>Donors</td><td>Individuals, communities and crowdfunding backers who want proof, not a PDF.</td></tr>
+    <tr><td>Funders and auditors</td><td>Foundations, grant makers and auditors who must check spending without chasing documents.</td></tr>
+  </table>
+  <p class="say">Start with one willing NGO and one campaign. Trust spreads from a visible example.</p>
+  <div class="foot"><span>Follow Your Dollar</span><span>07 / 11</span></div>
+</section>
+
+<!-- 8 USE CASES -->
+<section class="slide">
+  <div class="run"><span class="mk"><svg><use href="#mark"/></svg>Follow Your Dollar</span><span>Use cases</span></div>
+  <h2>Anywhere money passes through several hands.</h2>
+  <div class="cols c2" style="gap:34px 0">
+    <div><span class="num red">A</span><h3>Disaster relief</h3><p>Donations to field offices, then vendors for food, shelter and transport, each with a receipt.</p></div>
+    <div><span class="num red">B</span><h3>Medical and education funds</h3><p>Show that tuition or treatment payments reached the school or clinic.</p></div>
+    <div><span class="num red">C</span><h3>Community and public goods</h3><p>Neighborhood projects where contributors want to see spending line by line.</p></div>
+    <div><span class="num red">D</span><h3>Grants and CSR</h3><p>Funders release tranches and see receipts attached to every milestone.</p></div>
+  </div>
+  <div class="foot"><span>Follow Your Dollar</span><span>08 / 11</span></div>
+</section>
+
+<!-- 9 BUSINESS MODEL -->
+<section class="slide">
+  <div class="run"><span class="mk"><svg><use href="#mark"/></svg>Follow Your Dollar</span><span>Business model</span></div>
+  <h2>Free for donors. Trust is paid for by NGOs and funders.</h2>
+  <table>
+    <tr><th>Stream</th><th>Who pays</th><th>How</th></tr>
+    <tr><td>Verified-campaign fee</td><td>NGOs</td><td>Small percentage or flat fee on funds that pass through a verified trail</td></tr>
+    <tr><td>Review and compliance tools</td><td>NGOs, funders</td><td>Subscription for review queues, reports and audit exports</td></tr>
+    <tr><td>Grant tranche tracking</td><td>Foundations, CSR teams</td><td>Per-program license for milestone releases backed by receipts</td></tr>
+    <tr><td>Community tier</td><td>Grants, sponsors</td><td>Free for small community campaigns, funded by ecosystem grants</td></tr>
+  </table>
+  <p class="m mute" style="font-size:15px;margin-top:20px">PROPOSED MODEL. NOT YET VALIDATED WITH CUSTOMERS. PRICING IS TESTED IN THE NGO PILOT.</p>
+  <div class="foot"><span>Follow Your Dollar</span><span>09 / 11</span></div>
+</section>
+
+<!-- 10 WHAT'S POSSIBLE -->
+<section class="slide">
+  <div class="run"><span class="mk"><svg><use href="#mark"/></svg>Follow Your Dollar</span><span>What's possible</span></div>
+  <h2>From working prototype to a trusted giving layer.</h2>
+  <div class="cols c3">
+    <div><span class="lab green">Built today</span>
+      <ul class="chk done"><li>Escrowed hops</li><li>On-chain match rule</li><li>AI receipt extraction</li><li>Review and reclaim</li><li>Live trail dashboard</li></ul></div>
+    <div><span class="lab red">Next 3 months</span>
+      <ul class="chk"><li>Pilot with one NGO</li><li>Reviewer quorum</li><li>Stablecoin payments</li><li>Receipts on decentralized storage</li></ul></div>
+    <div><span class="lab">Vision</span>
+      <ul class="chk"><li>Currency-aware checks</li><li>NGO reputation score</li><li>Milestone grant releases</li><li>Independent audit</li></ul></div>
+  </div>
+  <div class="foot"><span>Follow Your Dollar</span><span>10 / 11</span></div>
+</section>
+
+<!-- 11 LIMITS + ASK -->
+<section class="slide">
+  <div class="run"><span class="mk"><svg><use href="#mark"/></svg>Follow Your Dollar</span><span>Honest limits / the ask</span></div>
+  <h2>We say what the chain can't prove.</h2>
+  <div class="cols c2">
+    <div><span class="lab red">Limits</span>
+      <p>The chain proves a record is unchanged, not that a receipt is real.</p><p style="margin-top:12px">One verifier today. A reviewer quorum comes next.</p><p style="margin-top:12px">Testnet prototype. Not audited.</p></div>
+    <div><span class="lab green">What we need</span>
+      <p>One NGO partner for a pilot campaign.</p><p style="margin-top:12px">Mentors in nonprofit compliance and security.</p><p style="margin-top:12px">Incubation support to reach mainnet safely.</p></div>
+  </div>
+  <p class="say">Trust you can check, not trust you are asked for.</p>
+  <div class="foot"><span>github.com/ayushsingh82/Follow-Your-Dollar</span><span>11 / 11</span></div>
+</section>
+
+</div>
+
+<div id="ctl"><button id="prev" aria-label="Previous">&lt;</button><span id="pos">1 / 11</span><button id="next" aria-label="Next">&gt;</button></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll(".slide"));
+  const stage = document.getElementById("stage");
+  let i = 0;
+  function fit() {
+    const s = Math.min(innerWidth / 1280, innerHeight / 720);
+    stage.style.transform = "translate(-50%, -50%) scale(" + s + ")";
+  }
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((el, k) => el.classList.toggle("active", k === i));
+    document.getElementById("bar").style.width = ((i + 1) / slides.length * 100) + "%";
+    document.getElementById("pos").textContent = (i + 1) + " / " + slides.length;
+    history.replaceState(null, "", "#" + (i + 1));
+  }
+  document.getElementById("prev").onclick = () => show(i - 1);
+  document.getElementById("next").onclick = () => show(i + 1);
+  addEventListener("keydown", e => {
+    if (["ArrowRight", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); show(i + 1); }
+    if (["ArrowLeft", "PageUp", "Backspace"].includes(e.key)) { e.preventDefault(); show(i - 1); }
+    if (e.key === "Home") show(0);
+    if (e.key === "End") show(slides.length - 1);
+  });
+  addEventListener("click", e => { if (!e.target.closest("#ctl")) show(e.clientX > innerWidth / 2 ? i + 1 : i - 1); });
+  addEventListener("resize", fit);
+  fit();
+  show((parseInt(location.hash.slice(1), 10) || 1) - 1);
+</script>
+</body>
+</html>
