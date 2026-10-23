@@ -55,7 +55,7 @@ export default function TrailMap({
               onClick={activate}
               onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), activate())}
             >
-              <rect width="230" height="68" rx="10" />
+              <rect width="230" height="68" />
               <text x="14" y="26" className="node-title">{h.label || "Recipient"}</text>
               <text x="14" y="46" className="node-sub">{short(h.to)}</text>
               <text x="14" y="62" className="node-status">{info.icon} {info.label}</text>
@@ -65,13 +65,13 @@ export default function TrailMap({
       })}
 
       <g transform={`translate(20 ${midY - 34})`} className="node donors">
-        <rect width="150" height="68" rx="10" />
+        <rect width="150" height="68" />
         <text x="14" y="30" className="node-title">Donors</text>
         <text x="14" y="52" className="node-sub">{eth(campaign.raised)} given</text>
       </g>
 
       <g transform={`translate(330 ${midY - 34})`} className="node ngo">
-        <rect width="120" height="68" rx="10" />
+        <rect width="120" height="68" />
         <text x="14" y="26" className="node-title">NGO</text>
         <text x="14" y="44" className="node-sub">{short(campaign.ngo)}</text>
         <text x="14" y="60" className="node-sub">{eth(campaign.balance)} left</text>

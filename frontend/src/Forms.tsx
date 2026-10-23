@@ -22,17 +22,17 @@ export function CreateCampaign({ onSubmit, disabled }: { onSubmit: (name: string
   );
 }
 
-export function Donate({ onSubmit, disabled }: { onSubmit: (amountEth: string) => void; disabled: boolean }) {
+export function Donate({ onSubmit, disabled, compact }: { onSubmit: (amountEth: string) => void; disabled: boolean; compact?: boolean }) {
   const [amount, setAmount] = useState("0.01");
   return (
     <form
-      className="card"
+      className={compact ? "inline-form" : "card"}
       onSubmit={(e) => {
         e.preventDefault();
         onSubmit(amount);
       }}
     >
-      <h3>Donate (test ETH)</h3>
+      {!compact && <h3>Donate (test ETH)</h3>}
       <input type="number" min="0" step="0.001" value={amount} onChange={(e) => setAmount(e.target.value)} required aria-label="Amount in ETH" />
       <button disabled={disabled || !(Number(amount) > 0)}>Donate</button>
     </form>

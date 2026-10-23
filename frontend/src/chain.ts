@@ -96,3 +96,41 @@ export async function loadHops(campaignId: bigint): Promise<Hop[]> {
     }),
   );
 }
+
+/** One decoded contract event. Formatting happens in the UI. */
+export interface ActivityLog {
+  id: string;
+  eventName: string;
+  args: Record<string, unknown>;
+  txHash: Hash;
+  block: bigint;
+  logIndex: number;
+}
+
+export async function loadActivity(): Promise<ActivityLog[]> {
+  const latest = await publicClient.getBlockNumber();
+  // Local chains are small. On a public testnet, only scan a recent window to stay within RPC limits.
+  const fromBlock = chain.id === 31337 ? 0n : latest > 40000n ? latest - 40000n : 0n;
+  const logs = (await publicClient.getContractEvents({
+    address: contractAddress,
+    abi,
+    fromBlock,
+    toBlock: latest,
+  })) as unknown as {
+    eventName: string;
+    args: Record<string, unknown>;
+    transactionHash: Hash;
+    blockNumber: bigint;
+    logIndex: number;
+  }[];
+  return logs
+    .map((l) => ({
+      id: `${l.transactionHash}-${l.logIndex}`,
+      eventName: l.eventName,
+      args: l.args,
+      txHash: l.transactionHash,
+      block: l.blockNumber,
+      logIndex: l.logIndex,
+    }))
+    .sort((a, b) => (a.block === b.block ? b.logIndex - a.logIndex : a.block > b.block ? -1 : 1));
+}

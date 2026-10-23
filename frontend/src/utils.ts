@@ -18,32 +18,33 @@ export function timeAgo(timestampSeconds: bigint | number) {
 }
 
 export const explorerBase = chain.blockExplorers?.default.url;
+export const txUrl = (h: string) => (explorerBase ? `${explorerBase}/tx/${h}` : null);
 export const addressUrl = (a: string) => (explorerBase ? `${explorerBase}/address/${a}` : null);
 
 /** Icon, short label and plain-language explanation for each hop status. */
 export const STATUS_INFO: Record<HopStatus, { icon: string; label: string; text: string }> = {
   Pending: {
-    icon: "⏳",
+    icon: "",
     label: "In escrow",
     text: "The funds are held in the contract until the receipt has been checked.",
   },
   Verified: {
-    icon: "✓",
+    icon: "",
     label: "Released",
     text: "The receipt matched the declared spend, so the contract released the funds automatically.",
   },
   Flagged: {
-    icon: "!",
+    icon: "",
     label: "Held for review",
     text: "The receipt did not match the declared spend. The funds stay in the contract until a reviewer decides.",
   },
   Approved: {
-    icon: "✓",
+    icon: "",
     label: "Approved",
     text: "A reviewer looked at the flagged hop, approved it, and the funds were released.",
   },
   Rejected: {
-    icon: "↩",
+    icon: "",
     label: "Returned",
     text: "The funds were returned to the campaign and were not paid to the recipient.",
   },

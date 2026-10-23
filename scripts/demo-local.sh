@@ -37,6 +37,7 @@ echo "==> Seeding demo data"
 echo "==> Starting frontend on http://localhost:5173"
 echo "    Wallet: add network RPC $RPC, chain id 31337, and import this NGO test key:"
 echo "    $NGO_KEY (public anvil test key, worthless)"
+echo "    Reviewer key (approves or rejects flagged payments): $VER_KEY"
 (cd "$ROOT/frontend" && NEXT_PUBLIC_CHAIN=local NEXT_PUBLIC_RPC_URL="$RPC" NEXT_PUBLIC_CONTRACT_ADDRESS="$CONTRACT" \
   NEXT_PUBLIC_API_URL=http://localhost:8787 npx next dev -p 5173 -H 127.0.0.1) &
 PIDS+=($!)
