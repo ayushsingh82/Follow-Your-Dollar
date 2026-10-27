@@ -307,3 +307,9 @@ a.side-line:hover { color: var(--brand-d); text-decoration: underline; }
 
 .receipt-stage { background: var(--tint); border: 2px solid var(--ink); padding: 52px 40px 56px; display: flex; justify-content: center; }
 .receipt-stage .receipt { width: 100%; max-width: 420px; }
+
+.live { margin: 0 0 22px; font: 600 13px var(--mono); letter-spacing: 0.04em; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.live .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--ok); display: inline-block; }
+.live a { color: var(--brand-d); }
+.foot-link { color: var(--accent); font-size: 15px; text-decoration: none; }
+.foot-link:hover { text-decoration: underline; }

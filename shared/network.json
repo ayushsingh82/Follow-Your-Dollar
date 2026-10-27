@@ -1,0 +1,9 @@
+{
+  "name": "Base Sepolia",
+  "chainId": 84532,
+  "rpcUrl": "https://sepolia.base.org",
+  "explorer": "https://sepolia.basescan.org",
+  "contractAddress": "0xcaFEab1BDa988003c40fc318ED09004176417979",
+  "deployTx": "0xd0d397d6bb6dd6b9f71edc5c255d7de3d310d3769e9c35b78cb7df32c273cacf",
+  "verifier": "0xB7D8e02413fF9f4CFAF86fdE9259a2511bB4aB40"
+}

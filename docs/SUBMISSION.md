@@ -40,10 +40,12 @@ See `docs/ARCHITECTURE.md` (diagram, flow, contract functions, trust model).
 Solidity + Foundry, Base Sepolia, TypeScript, Node/Express, viem, Next.js (React), Claude (vision) for receipt extraction.
 
 ## Links (TODO)
-- GitHub repository: TODO
+- GitHub repository: https://github.com/ayushsingh82/Follow-Your-Dollar
 - Live demo link: TODO (frontend deployed, pointing at Base Sepolia contract)
 - Demo video (2-3 min): TODO
-- Contract address on Base Sepolia: TODO
+- Contract address on Base Sepolia: 0xcaFEab1BDa988003c40fc318ED09004176417979
+- Contract on the block explorer: https://sepolia.basescan.org/address/0xcaFEab1BDa988003c40fc318ED09004176417979
+- Deployment transaction: https://sepolia.basescan.org/tx/0xd0d397d6bb6dd6b9f71edc5c255d7de3d310d3769e9c35b78cb7df32c273cacf
 
 ## Team (TODO)
 Names, roles, contact.

@@ -9,7 +9,7 @@ A public on-chain trail for donations. AI reads the receipt, a smart contract de
 ![Solidity](https://img.shields.io/badge/Solidity-0.8-363636?logo=solidity)
 ![Foundry](https://img.shields.io/badge/Foundry-tested-orange)
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)
-![Network](https://img.shields.io/badge/Base_Sepolia-testnet-0052FF)
+[![Network](https://img.shields.io/badge/Base_Sepolia-live-0052FF)](https://sepolia.basescan.org/address/0xcaFEab1BDa988003c40fc318ED09004176417979)
 ![Status](https://img.shields.io/badge/status-prototype-yellow)
 
 [Architecture](docs/ARCHITECTURE.md) · [Demo script](docs/DEMO_SCRIPT.md) · [Submission text](docs/SUBMISSION.md)
@@ -17,6 +17,21 @@ A public on-chain trail for donations. AI reads the receipt, a smart contract de
 </div>
 
 ---
+
+## Live on Base Sepolia
+
+The contract is deployed and running on the **Base Sepolia** test network.
+
+| | |
+|---|---|
+| Network | Base Sepolia, chain id `84532` |
+| RPC | `https://sepolia.base.org` |
+| Contract | [`0xcaFEab1BDa988003c40fc318ED09004176417979`](https://sepolia.basescan.org/address/0xcaFEab1BDa988003c40fc318ED09004176417979) |
+| Deployment transaction | [`0xd0d397d6…c273cacf`](https://sepolia.basescan.org/tx/0xd0d397d6bb6dd6b9f71edc5c255d7de3d310d3769e9c35b78cb7df32c273cacf) |
+| Verifier (reviewer) wallet | [`0xB7D8e02413fF9f4CFAF86fdE9259a2511bB4aB40`](https://sepolia.basescan.org/address/0xB7D8e02413fF9f4CFAF86fdE9259a2511bB4aB40) |
+| Block explorer | [sepolia.basescan.org](https://sepolia.basescan.org) |
+
+The network, RPC and contract address are built into the code (`shared/network.json`), so no environment variables are needed to point the apps at the deployed contract. To use the app yourself, add Base Sepolia to your wallet (chain id `84532`) and get free test ETH from a Base Sepolia faucet.
 
 ## The problem
 
@@ -99,24 +114,25 @@ cd backend && npm start                        # http://localhost:8787
 cd frontend && npm run dev                     # http://localhost:3000
 ```
 
+Environment variables are only needed for secrets (`VERIFIER_PRIVATE_KEY`, `ANTHROPIC_API_KEY`) and the backend URL. The commands above run against a local chain, which is what the one-command demo uses; it overrides the built-in network with `CHAIN=local` and `NEXT_PUBLIC_CHAIN=local`. With no config at all, both apps use the deployed Base Sepolia contract.
+
 With no `ANTHROPIC_API_KEY`, the backend runs in **mock mode**: the uploader types the receipt total and results are labelled `source: "mock"`. Set the key for real extraction.
 
 ## Configuration
+
+The network (Base Sepolia, chain id 84532), its RPC and the deployed contract address are set in code in `shared/network.json`. Only secrets and the backend URL are configured through the environment.
 
 **Backend (`backend/.env`)**
 
 | Variable | Purpose |
 |---|---|
-| `PORT` | API port (default `8787`) |
-| `FRONTEND_ORIGIN` | Comma-separated origins allowed by CORS |
-| `CHAIN` | `local` or `baseSepolia` |
-| `RPC_URL` | Optional RPC override |
-| `CONTRACT_ADDRESS` | Deployed `DonationTrail` address |
-| `VERIFIER_PRIVATE_KEY` | Verifier wallet key (throwaway, testnet only) |
+| `VERIFIER_PRIVATE_KEY` | Verifier wallet key (throwaway, testnet only). Required |
 | `ANTHROPIC_API_KEY` | Enables real AI extraction; empty means mock mode |
 | `ANTHROPIC_MODEL` | Model used for extraction |
+| `PORT` | API port (default `8787`) |
+| `FRONTEND_ORIGIN` | Comma-separated origins allowed by CORS |
 
-**Frontend (`frontend/.env.local`)**: `NEXT_PUBLIC_CHAIN`, `NEXT_PUBLIC_RPC_URL`, `NEXT_PUBLIC_CONTRACT_ADDRESS`, `NEXT_PUBLIC_API_URL`. Only public values belong here.
+**Frontend (`frontend/.env.local`)**: `NEXT_PUBLIC_API_URL`, the URL of the backend. Only public values belong here.
 
 ## Smart contract
 
@@ -131,12 +147,13 @@ With no `ANTHROPIC_API_KEY`, the backend runs in **mock mode**: the uploader typ
 
 Safeguards: owner-only spending, verifier-only checks, one check per hop, hops cannot exceed the campaign balance, state is updated before any ETH transfer, and a recipient that refuses payment cannot block the process.
 
-## Deploy to Base Sepolia
+## Deploying your own copy to Base Sepolia
 
-1. Create a throwaway wallet and fund it with test ETH from a faucet. Never use a wallet that holds real funds.
-2. Create a second throwaway wallet to act as the verifier.
-3. Deploy with `forge script ... --rpc-url <Base Sepolia RPC>` and set `CHAIN=baseSepolia` and `NEXT_PUBLIC_CHAIN=baseSepolia`.
-4. Keep private keys in git-ignored `.env` files only, never in code or chat.
+1. Create a throwaway deployer wallet and fund it with test ETH from a faucet. Never use a wallet that holds real funds.
+2. Create a second throwaway wallet to act as the verifier, and give it a little test ETH for gas.
+3. Deploy: `VERIFIER_ADDRESS=<verifier> forge script script/Deploy.s.sol --rpc-url https://sepolia.base.org --broadcast --private-key <deployer key>`
+4. Put the new contract address in `shared/network.json`.
+5. Keep private keys in git-ignored `.env` files only, never in code or chat.
 
 ## Testing
 
@@ -151,7 +168,7 @@ Real AI extraction has not been tested against the live API yet; it needs an API
 
 ## Security notes
 
-- No keys in code; secrets are read from git-ignored `.env` files.
+- No keys in code; secrets are read from git-ignored `.env` files. The network and contract address are public and live in `shared/network.json`.
 - Uploads are limited to 5 MB and to JPEG, PNG, WebP, GIF or PDF.
 - The check endpoint accepts only an extraction whose hash equals the receipt hash stored on-chain for that hop, so one receipt cannot be substituted for another.
 - CORS is restricted to configured frontend origins.

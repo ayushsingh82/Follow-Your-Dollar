@@ -2,15 +2,19 @@ import { createPublicClient, createWalletClient, custom, http } from "viem";
 import type { Abi, Address, Hash, WalletClient } from "viem";
 import { baseSepolia, foundry } from "viem/chains";
 import abiJson from "../../shared/DonationTrail.abi.json";
+import network from "../../shared/network.json";
 
-export const chain = process.env.NEXT_PUBLIC_CHAIN === "baseSepolia" ? baseSepolia : foundry;
-export const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as Address; // empty when unset; App checks before use
+// Base Sepolia (chain id 84532) is built in. NEXT_PUBLIC_CHAIN=local is only for the local demo script.
+const local = process.env.NEXT_PUBLIC_CHAIN === "local";
+export const chain = local ? foundry : baseSepolia;
+export const contractAddress = (process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || network.contractAddress) as Address;
+export const explorer = network.explorer;
 export const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
 export const abi = abiJson as Abi;
 
 export const publicClient = createPublicClient({
   chain,
-  transport: http(process.env.NEXT_PUBLIC_RPC_URL || undefined),
+  transport: http(process.env.NEXT_PUBLIC_RPC_URL || (local ? undefined : network.rpcUrl)),
 });
 
 export const STATUS = ["Pending", "Verified", "Flagged", "Approved", "Rejected"] as const;

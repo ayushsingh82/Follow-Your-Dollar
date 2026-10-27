@@ -1,5 +1,9 @@
 import Link from "next/link";
 import { Logo } from "../src/Logo";
+import network from "../../shared/network.json";
+
+const contractUrl = `${network.explorer}/address/${network.contractAddress}`;
+const shortAddr = `${network.contractAddress.slice(0, 6)}…${network.contractAddress.slice(-4)}`;
 
 export default function Landing() {
   return (
@@ -25,6 +29,10 @@ export default function Landing() {
               <p className="lead">
                 Donors give to a campaign. The NGO pays vendors hop by hop, each with a receipt. AI reads the receipt, and a smart
                 contract decides whether the money is released.
+              </p>
+              <p className="live">
+                <span className="dot" /> Live on {network.name} ·{" "}
+                <a href={contractUrl} target="_blank" rel="noreferrer">contract {shortAddr} ↗</a>
               </p>
               <div className="cta">
                 <Link className="btn lg" href="/dashboard">Open the dashboard</Link>
@@ -170,6 +178,7 @@ export default function Landing() {
             <span className="lab">Built for</span>
             <p className="foot-note">Web3 for Social Good Hackathon 2026</p>
             <p className="foot-note">Tech Track</p>
+            <a className="foot-link" href={contractUrl} target="_blank" rel="noreferrer">Contract on Basescan ↗</a>
           </div>
         </div>
         <div className="foot-bar">
